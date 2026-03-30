@@ -1,0 +1,141 @@
+---
+title: "The Ripple Effects of the 2008 Financial Crisis on the U.S. Economy"
+author: "ZXWL"
+format: 
+  revealjs:
+    theme: serif
+    transition: convex
+editor: visual
+---
+
+## Introduce
+
+This study aims to study the changes in various economic data from various aspects of the 2008 economic crisis. This includes data on financial institutions, real estate, and employment. This project analyzes the impact of bank failures, unemployment rates, and household debt repayment rates to understand how the financial collapse triggered wider economic turmoil.
+
+## Statistical chart on bank failures and unemployment
+
+```{r, echo = FALSE, message = FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(knitr)
+library(patchwork)
+
+dt1 <- read_csv('FDIC Failed Bank List.csv')
+dt2 <- dt1 %>% select(-Cert, -Fund)
+dt3 <- dt2 %>%
+  tidyr::separate('Closing Date', into = c('day', 'month', 'year'), sep = '-', remove = FALSE) %>%
+  mutate(
+    year = paste0('20', year),
+    year = as.integer(year)
+  )
+
+year_count <- dt3 %>%
+  count(year)
+
+plot1 <- ggplot(
+  year_count,
+  aes(x = year, y = n)) +
+  geom_line(color = '#4ab1da') +
+  geom_point(color = '#da4a9f') +
+  labs(
+    title = 'Number of failed banks per year',
+    x = 'year',
+    y = 'number of failed banks'
+  ) +
+  theme_light()
+
+
+dt3 <- read_csv('UNRATE.csv')
+
+plot2 <- ggplot(
+  dt3,
+  aes(x = observation_date, y = UNRATE)) +
+  geom_area(fill = '#c8cfc4') +
+  geom_line(color = '#434453', linewidth = 1.025) +
+  labs(
+    title = 'Unemployment Rate',
+    x = 'year_month',
+    y = 'unemployment rate in percentage'
+  ) +
+  theme_light()
+
+
+plot_12 <- plot1 + plot2 + plot_layout(ncol = 2)
+print(plot_12)
+```
+
+## Statistics of housing loan repayment rate and housing loan bad debt rate
+
+```{r, echo = FALSE, message = FALSE}
+dt4 <- read_csv('Household Debt Service Ratios.csv')
+
+dt5 <- pivot_longer(
+  dt4,
+  cols = c('Mortgage', 'Consumer'),
+  names_to = 'type',
+  values_to = 'ratio'
+  )
+
+quarter_type <- unique(dt5$Quarter)
+plot3_label <- ifelse(
+  grepl(':1$', quarter_type),
+  sub(':.*', '', quarter_type),
+  ''
+)
+
+plot3 <- ggplot(
+  dt5,
+  aes(x = Quarter, y = ratio, color = type)) +
+  geom_point() +
+  labs(
+    title = 'Different Types of Household Debt Service Ratio',
+    x = 'year_quarter',
+    y = 'debt ratio in percentage'
+    ) +
+  scale_color_manual(
+    values = c(
+      'Mortgage' = '#f09d20',
+      'Consumer' = '#0076aa'
+    )) +
+  scale_x_discrete(breaks = quarter_type, labels = plot3_label) +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45))
+
+
+dt6 <- read_csv('Charge-Off Rates All Banks, SA - Sheet1.csv')
+
+dt7 <- dt6 %>%
+  mutate(
+    Residential = as.numeric(Residential),
+    Year = as.integer(sub(':.*', '', Time))
+    ) %>%
+  group_by(Year) %>%
+  summarise(residential_average = mean(Residential))
+
+plot4 <-
+  ggplot(
+    dt7,
+    aes(x = Year, y = residential_average)
+    ) +
+  geom_col(fill = '#663589') +
+  labs(
+    title = 'Average of Residential Charge-off Rate',
+    x = 'year',
+    y = 'Average of Charge-off Rate'
+  ) +
+  theme_light() +
+  coord_flip()
+
+
+
+plot_34 <- plot3 + plot4 + plot_layout(ncol = 2)
+print(plot_34)
+```
+
+## Conclusion
+
+The first and second statistical charts show that the 2008 financial crisis had a severe impact on banks and unemployment. The number of bank failures increased sharply, and many companies went bankrupt due to the inability to obtain loans and withdraw deposits, resulting in a sharp rise in unemployment.
+
+The third and fourth statistical charts show that around 2008, the proportion of household income used to repay mortgages increased sharply. In those years, more and more mortgage borrowers were unable to repay their loans, which eventually led to the outbreak of the financial crisis.

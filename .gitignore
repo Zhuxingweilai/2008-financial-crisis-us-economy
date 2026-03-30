@@ -1,0 +1,5 @@
+.Rproj.user/
+.quarto/
+.DS_Store
+Thumbs.db
+*.code-workspace
