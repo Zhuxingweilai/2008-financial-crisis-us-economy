@@ -21,7 +21,7 @@ library(ggplot2)
 library(tidyr)
 library(knitr)
 
-dt1 <- read_csv('FDIC Failed Bank List.csv')
+dt1 <- read_csv('fdic-failed-bank-list.csv')
 dt2 <- dt1 %>% select(-Cert, -Fund)
 dt3 <- dt2 %>%
   tidyr::separate('Closing Date', into = c('day', 'month', 'year'), sep = '-', remove = FALSE) %>%
@@ -37,6 +37,7 @@ kable(year_count, col.names = c('year', 'number of bank failures'))
 ```
 
 ```{r, echo = TRUE, message = FALSE}
+#| label: fig-bank-failures-by-year
 #| code-fold: true
 plot1 <- ggplot(
   year_count,
@@ -58,8 +59,9 @@ This question is discovered by counting the number of bankruptcies in the United
 ## Data 2: Analysis between unemployment rate and financial crisis
 
 ```{r, echo = TRUE, message = FALSE}
+#| label: fig-unemployment-rate-monthly
 #| code-fold: true
-dt3 <- read_csv('UNRATE.csv')
+dt3 <- read_csv('fred-unemployment-rate-monthly.csv')
 
 plot2 <- ggplot(
   dt3,
@@ -81,8 +83,9 @@ This combination of area chart and line chart is a time series chart. The variab
 ## Data 3:
 
 ```{r, echo = TRUE, message = FALSE}
+#| label: fig-household-debt-service-ratios
 #| code-fold: true
-dt4 <- read_csv('Household Debt Service Ratios.csv')
+dt4 <- read_csv('household-debt-service-ratios.csv')
 
 dt5 <- pivot_longer(
   dt4,
@@ -124,8 +127,9 @@ This graph is a time series scatter plot, using data about the percentage of hou
 ## Data 4:
 
 ```{r, echo = TRUE, message = FALSE}
+#| label: fig-residential-charge-off-annual
 #| code-fold: true
-dt6 <- read_csv('Charge-Off Rates All Banks, SA - Sheet1.csv')
+dt6 <- read_csv('charge-off-rates-residential-all-banks-sa.csv')
 
 dt7 <- dt6 %>%
   mutate(

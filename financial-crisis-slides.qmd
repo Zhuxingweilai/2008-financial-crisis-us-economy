@@ -15,6 +15,7 @@ This study aims to study the changes in various economic data from various aspec
 ## Statistical chart on bank failures and unemployment
 
 ```{r, echo = FALSE, message = FALSE}
+#| label: fig-bank-failures-unemployment-panel
 library(readr)
 library(dplyr)
 library(ggplot2)
@@ -22,7 +23,7 @@ library(tidyr)
 library(knitr)
 library(patchwork)
 
-dt1 <- read_csv('FDIC Failed Bank List.csv')
+dt1 <- read_csv('fdic-failed-bank-list.csv')
 dt2 <- dt1 %>% select(-Cert, -Fund)
 dt3 <- dt2 %>%
   tidyr::separate('Closing Date', into = c('day', 'month', 'year'), sep = '-', remove = FALSE) %>%
@@ -47,7 +48,7 @@ plot1 <- ggplot(
   theme_light()
 
 
-dt3 <- read_csv('UNRATE.csv')
+dt3 <- read_csv('fred-unemployment-rate-monthly.csv')
 
 plot2 <- ggplot(
   dt3,
@@ -69,7 +70,8 @@ print(plot_12)
 ## Statistics of housing loan repayment rate and housing loan bad debt rate
 
 ```{r, echo = FALSE, message = FALSE}
-dt4 <- read_csv('Household Debt Service Ratios.csv')
+#| label: fig-household-debt-chargeoff-panel
+dt4 <- read_csv('household-debt-service-ratios.csv')
 
 dt5 <- pivot_longer(
   dt4,
@@ -104,7 +106,7 @@ plot3 <- ggplot(
   theme(axis.text.x = element_text(angle = 45))
 
 
-dt6 <- read_csv('Charge-Off Rates All Banks, SA - Sheet1.csv')
+dt6 <- read_csv('charge-off-rates-residential-all-banks-sa.csv')
 
 dt7 <- dt6 %>%
   mutate(
